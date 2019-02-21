@@ -2,7 +2,6 @@ import argparse
 import os
 import requests
 import subprocess
-import textwrap
 import urllib
 
 
@@ -13,38 +12,54 @@ def lookup(selection, word, identifier):
 
     link = "https://en.oxforddictionaries.com/{}/{}".format(selection, word)
     site = str(urllib.request.urlopen(link).read())
-    results = []
+    synonyms = []
+    definitions = []
 
     if "No exact matches found" in site:
         print("No matches found.")
     else:
+        print("\n " + word.upper() + "\n" + "-" * (len(word) + 2) + "\n")
+
         for i in range(len(site)):
             if site[i:i + 12] == "class=\"{}\">".format(identifier):
                 if identifier == "syn":
-                    results += \
+                    synonyms += \
                         site[i + 12:i + 12 + site[i + 12:].index(
                             "</")].split(", ")
+
                 if identifier == "ind":
-                    results.append(
+                    definitions.append(
                         site[i + 12:i + 12 + site[i + 12:].index("</")])
-                    results.append("\n")
 
-    results = [_ for _ in results if len(_) > 0]
+    synonyms = [_ for _ in synonyms if len(_) > 0]
 
-    if len(results) > 20:
-        results = results[:20]
+    if len(synonyms) > 20:
+        synonyms = synonyms[:20]
 
-    for item in results:
+    for item in synonyms:
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
+        print("| " + item + "\n")
+
+    for item in definitions:
+        if "&#39;" in item:
+            item = item.replace("&#39;", "\'")
+
+        if "<strong class=\"phrase\">" in item:
+            continue
+            # Uncomment to enable phrases
+            # item = item.replace("<strong class=\"phrase\">", "")
+
+        if len(item) + 4 > term_width:
+            while len(item) + 4 >= term_width:
+                space = item[:term_width - 4][::-1].index(" ")
+                print("| " + item[:term_width - (4 + space)])
+                item = item[term_width - (4 + space):]
+
+            print("| " + item + "\n")
+
         else:
-            if len(item) + 4 > term_width:
-                while len(item) > term_width:
-                    print(" " * 2 + item[:term_width - 4])
-                    item = item[term_width - 4:]
-                print(" " * 2 + item)
-            else:
-                print(" " * 2 + item)
+            print("| " + item + "\n")
 
 
 def main():
