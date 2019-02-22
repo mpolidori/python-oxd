@@ -100,8 +100,11 @@ def main():
     if args.synonyms:
         lookup("thesaurus", args.synonyms, "syn")
 
-    if args.definition:
+    elif args.definition:
         lookup("definition", args.definition, "ind")
+
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
