@@ -17,8 +17,13 @@ def lookup(selection, word, identifier):
     results = []
     parts_of_speech = []
 
-    if "No exact matches found" in site:
+    if "No exact matches found" in site \
+        or identifier == "syn" \
+        and "Synonyms of {} ".format(word) not in site \
+        or identifier == "ind" \
+            and "Definition of {} ".format(word) not in site:
         print("No matches found.")
+
     else:
         for i in range(len(site)):
             if site[i:i + 12] == "class=\"pos\">".format(identifier):
@@ -37,17 +42,26 @@ def lookup(selection, word, identifier):
 
     results = [_ for _ in results if len(_) > 0]
 
-    if len(results) > 20:
-        results = results[:20]
+    # Uncomment to shorten results output
+    """
+    if len(results) > 10:
+        results = results[:10]
+    """
 
     if len(results) > 0:
         if identifier == "ind":
             print("\n {} - {}\n".format(
-                word.upper(), ", ".join(parts_of_speech)))
+                word.upper(), ", ".join(
+                    set([i for i in parts_of_speech if len(i) > 0]))))
         else:
             print("\n {}\n".format(word.upper()))
 
+    if identifier == "syn":
+        results = [", ".join(results)]
+
     for item in results:
+        if item == "":
+            break
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
         if "<strong class=\"phrase\">" in item:
@@ -72,7 +86,7 @@ def main():
     parser.add_argument(
         "-d",
         "--definition",
-        help="show definition",
+        help="show definition(s)",
         metavar=""
     )
     parser.add_argument(
@@ -83,10 +97,10 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.synonyms and len(args.synonyms) > 1:
+    if args.synonyms:
         lookup("thesaurus", args.synonyms, "syn")
 
-    if args.definition and len(args.definition) > 1:
+    if args.definition:
         lookup("definition", args.definition, "ind")
 
 
