@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-import os
+# import os
 import requests
 import subprocess
 import urllib
@@ -17,28 +17,29 @@ def lookup(selection, word, identifier):
     results = []
     parts_of_speech = []
 
-    if "No exact matches found" in site \
-        or identifier == "syn" \
-        and "Synonyms of {} ".format(word) not in site \
-        or identifier == "ind" \
-            and "Definition of {} ".format(word) not in site:
+    if "No exact matches found" in site:
         print("No matches found.")
 
     else:
+        if link not in site:
+            start = site.index(" of ") + 4
+            end = start + site[start:].index(" ")
+            word = site[start:end]
+
         for i in range(len(site)):
             if site[i:i + 12] == "class=\"pos\">".format(identifier):
                 parts_of_speech.append(
-                    site[i + 12:i + 12 + site[i + 12:].index("</")])
+                    site[i + 12:i + 12 + site[i + 12:].index("<")])
 
             if site[i:i + 12] == "class=\"{}\">".format(identifier):
                 if identifier == "syn":
                     results += \
                         site[i + 12:i + 12 + site[i + 12:].index(
-                            "</")].split(", ")
+                            "<")].split(", ")
 
                 if identifier == "ind":
                     results.append(
-                        site[i + 12:i + 12 + site[i + 12:].index("</")])
+                        site[i + 12:i + 12 + site[i + 12:].index("<")])
 
     results = [_ for _ in results if len(_) > 0]
 
@@ -64,10 +65,6 @@ def lookup(selection, word, identifier):
             break
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
-        if "<strong class=\"phrase\">" in item:
-            continue
-            # Uncomment to enable phrases
-            # item = item.replace("<strong class=\"phrase\">", "")
 
         if len(item) + 4 > term_width:
             while len(item) + 4 >= term_width:
@@ -75,10 +72,7 @@ def lookup(selection, word, identifier):
                 print("| " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
 
-            print("| " + item + "\n")
-
-        else:
-            print("| " + item + "\n")
+        print("| " + item + "\n")
 
 
 def main():
@@ -108,4 +102,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except urllib.error.URLError:
+        print("Check your internet connection!")
