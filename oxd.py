@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 import requests
@@ -11,40 +13,43 @@ def lookup(selection, word, identifier):
         subprocess.check_output(['stty', 'size']).decode().split()[1])
 
     link = "https://en.oxforddictionaries.com/{}/{}".format(selection, word)
-    site = str(urllib.request.urlopen(link).read())
-    synonyms = []
-    definitions = []
+    site = urllib.request.urlopen(link).read().decode("utf-8")
+    results = []
+    parts_of_speech = []
 
     if "No exact matches found" in site:
         print("No matches found.")
     else:
-        print("\n " + word.upper() + "\n" + "-" * (len(word) + 2) + "\n")
-
         for i in range(len(site)):
+            if site[i:i + 12] == "class=\"pos\">".format(identifier):
+                parts_of_speech.append(
+                    site[i + 12:i + 12 + site[i + 12:].index("</")])
+
             if site[i:i + 12] == "class=\"{}\">".format(identifier):
                 if identifier == "syn":
-                    synonyms += \
+                    results += \
                         site[i + 12:i + 12 + site[i + 12:].index(
                             "</")].split(", ")
 
                 if identifier == "ind":
-                    definitions.append(
+                    results.append(
                         site[i + 12:i + 12 + site[i + 12:].index("</")])
 
-    synonyms = [_ for _ in synonyms if len(_) > 0]
+    results = [_ for _ in results if len(_) > 0]
 
-    if len(synonyms) > 20:
-        synonyms = synonyms[:20]
+    if len(results) > 20:
+        results = results[:20]
 
-    for item in synonyms:
+    if len(results) > 0:
+        if identifier == "ind":
+            print("\n {} - {}\n".format(
+                word.upper(), ", ".join(parts_of_speech)))
+        else:
+            print("\n {}\n".format(word.upper()))
+
+    for item in results:
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
-        print("| " + item + "\n")
-
-    for item in definitions:
-        if "&#39;" in item:
-            item = item.replace("&#39;", "\'")
-
         if "<strong class=\"phrase\">" in item:
             continue
             # Uncomment to enable phrases
