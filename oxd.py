@@ -19,7 +19,7 @@ def definition(word):
     results = []
 
     if "No exact matches found" in site:
-        print("\n No matches found.\n")
+        print("\n  No matches found.\n")
 
     else:
         if link not in site:
@@ -27,7 +27,7 @@ def definition(word):
             end = start + site[start:].index(" ")
             word = site[start:end]
 
-        print("\n DEFINITION(S) OF {}:\n".format(word.upper()))
+        print("\n  DEFINITION(S) OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
             if site[i:i + 16] == "class=\"ex\"> <em>":
@@ -48,6 +48,14 @@ def definition(word):
 
             if site[i:i + 12] == "class=\"ind\">":
                 results.append(site[i + 12:i + 12 + site[i + 12:].index("<")])
+
+            if site[i:i + 23] == "class=\"crossReference\">" \
+               and site[i + 23] != "<":
+                results.append(
+                    site[i + 23:i + 23 + site[i + 23:].index("<")] +
+                    site[i + 23 + site[i + 23:].index(">") + 1:i + 23 +
+                         site[i + 23:].index(">") + 1 + site[i
+                         + 23 + site[i + 23:].index(">") + 1:].index("<")])
 
             if site[i:i + 15] == "class=\"phrase\">":
                 break
@@ -85,7 +93,7 @@ def definition(word):
                 item = "  " + item[4:]
 
         if item[:3] == "P, ":
-            print(" {}\n".format(item[3:].upper()))
+            print("  {}\n".format(item[3:].upper()))
             continue
 
         if item[:3] == "I, ":
@@ -129,6 +137,7 @@ def definition(word):
             if item[spaces + 1] != "'" and item[-1] != "'":
                 if last[:3] != "I, " and last[:4] != "SI, ":
                     spaces += 1
+
             else:
                 spaces += 2
 
@@ -153,7 +162,7 @@ def synonyms(word):
     results = []
 
     if "No exact matches found" in site:
-        print("\n No matches found.\n")
+        print("\n  No matches found.\n")
 
     else:
         if link not in site:
@@ -161,7 +170,7 @@ def synonyms(word):
             end = start + site[start:].index(" ")
             word = site[start:end]
 
-        print("\n SYNONYMS OF {}:\n".format(word.upper()))
+        print("\n  SYNONYMS OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
 
@@ -189,7 +198,7 @@ def synonyms(word):
                 print(" " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
 
-        print(" " + item + "\n")
+        print("  " + item + "\n")
 
 
 def main():
