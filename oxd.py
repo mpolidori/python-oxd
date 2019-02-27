@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 
 import argparse
-# import os
 import requests
 import subprocess
 import urllib
 
 
-def lookup(selection, word, identifier):
+def definition(word):
 
     term_width = int(
         subprocess.check_output(['stty', 'size']).decode().split()[1])
 
-    link = "https://en.oxforddictionaries.com/{}/{}".format(selection, word)
+    if term_width > 80:
+        term_width = 80
+
+    link = "https://en.oxforddictionaries.com/definition/{}".format(word)
     site = urllib.request.urlopen(link).read().decode("utf-8")
     results = []
-    parts_of_speech = []
 
     if "No exact matches found" in site:
         print("No matches found.")
@@ -27,75 +28,181 @@ def lookup(selection, word, identifier):
             word = site[start:end]
 
         for i in range(len(site)):
-            if site[i:i + 12] == "class=\"pos\">".format(identifier):
-                parts_of_speech.append(
-                    site[i + 12:i + 12 + site[i + 12:].index("<")])
+            if site[i:i + 16] == "class=\"ex\"> <em>":
+                results.append("EX, {}".format(
+                    site[i + 16:i + 16 + site[i + 16:].index("<")]))
 
-            if site[i:i + 12] == "class=\"{}\">".format(identifier):
-                if identifier == "syn":
-                    results += \
-                        site[i + 12:i + 12 + site[i + 12:].index(
-                            "<")].split(", ")
+            if site[i:i + 12] == "class=\"pos\">":
+                results.append("P, {}".format(
+                    site[i + 12:i + 12 + site[i + 12:].index("<")]))
 
-                if identifier == "ind":
-                    results.append(
-                        site[i + 12:i + 12 + site[i + 12:].index("<")])
+            if site[i:i + 18] == "class=\"iteration\">":
+                results.append("I, {}".format(
+                    site[i + 18:i + 18 + site[i + 18:].index("<")]))
 
-    results = [_ for _ in results if len(_) > 0]
+            if site[i:i + 26] == "class=\"subsenseIteration\">":
+                results.append("SI, {}".format(
+                    site[i + 26:i + 26 + site[i + 26:].index("<")]))
 
-    # Uncomment to shorten results output
-    """
-    if len(results) > 10:
-        results = results[:10]
-    """
+            if site[i:i + 12] == "class=\"ind\">":
+                results.append(site[i + 12:i + 12 + site[i + 12:].index("<")])
 
-    if len(results) > 0:
-        if identifier == "ind":
-            print("\n {} - {}\n".format(
-                word.upper(), ", ".join(
-                    set([i for i in parts_of_speech if len(i) > 0]))))
+            if site[i:i + 15] == "class=\"phrase\">":
+                break
+
+    results = [
+        item for item in results if item not in ["EX,", "I, ", "SI, ", ""]]
+
+    print("\n {}:\n".format(word.upper()))
+
+    for item in results:
+        spaces = 1
+
+        if results.index(item) > 1:
+            last = results[results.index(item) - 1]
+
+            if "&lsquo;" in item and "&lsquo;" in last:
+                continue
+
         else:
-            print("\n {}\n".format(word.upper()))
+            last = ""
 
-    if identifier == "syn":
-        results = [", ".join(results)]
+        if results.index(item) > 2:
+            second_last = results[results.index(item) - 2]
+
+        else:
+            second_last = ""
+
+        if "EX, " in item:
+            item = item.replace("&lsquo;", "'")
+            item = item.replace("&rsquo;", "'")
+            item = "  " + item[4:]
+
+        if item[:3] == "P, ":
+            print(" {}\n".format(item[3:].upper()))
+            continue
+
+        if item[:3] == "I, ":
+            continue
+
+        if item[:4] == "SI, ":
+            continue
+
+        if "&#39;" in item:
+            item = item.replace("&#39;", "\'")
+
+        if last[:3] == "I, ":
+            item = last[3:] + "  " + item
+
+        if last[:4] == "SI, ":
+            item = last[4:] + "  " + item
+            spaces += 1
+
+        if second_last[:3] == "I, ":
+            spaces += 2
+
+        if second_last[:4] == "SI, ":
+            spaces += 5
+
+        item = " " * spaces + item
+
+        if item[spaces] != "'" and item[-1] != "'":
+            item = "|" + item
+
+        if len(item) + 5 > term_width:
+            if second_last[:3] == "I, " or second_last[:4] == "SI, ":
+                spaces += 3
+
+            if last[:4] == "SI, ":
+                spaces += 2
+
+            if item[spaces + 1] != "'" and item[-1] != "'":
+                spaces += 4
+
+            while len(item) + 4 >= term_width:
+                space = item[:term_width - 4][::-1].index(" ")
+                print(item[:term_width - (4 + space)])
+                item = " " * spaces + item[term_width - (4 + space):]
+
+        print(item + "\n")
+
+
+def synonyms(word):
+
+    term_width = int(
+        subprocess.check_output(['stty', 'size']).decode().split()[1])
+
+    if term_width > 80:
+        term_width = 80
+
+    link = "https://en.oxforddictionaries.com/thesaurus/{}".format(word)
+    site = urllib.request.urlopen(link).read().decode("utf-8")
+    results = []
+
+    if "No exact matches found" in site:
+        print("No matches found.")
+
+    else:
+        if link not in site:
+            start = site.index(" of ") + 4
+            end = start + site[start:].index(" ")
+            word = site[start:end]
+
+        for i in range(len(site)):
+
+            if site[i:i + 12] == "class=\"syn\">":
+                results += \
+                    site[i + 12:i + 12 + site[i + 12:].index("<")].split(", ")
+
+    results = [item for item in results if len(item) > 0]
+
+    if len(results) > 50:
+        results = results[:50]
+
+    print("\n {}:\n".format(word.upper()))
+
+    results = [", ".join(results)]
 
     for item in results:
         if item == "":
             break
+
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
 
-        if len(item) + 4 > term_width:
+        if len(item) + 5 > term_width:
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
-                print("| " + item[:term_width - (4 + space)])
+                print(" " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
 
-        print("| " + item + "\n")
+        print(" " + item + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "-d",
         "--definition",
         help="show definition(s)",
         metavar=""
     )
+
     parser.add_argument(
         "-s",
         "--synonyms",
         help="show synonyms",
         metavar=""
     )
+
     args = parser.parse_args()
 
     if args.synonyms:
-        lookup("thesaurus", args.synonyms, "syn")
+        synonyms(args.synonyms)
 
     elif args.definition:
-        lookup("definition", args.definition, "ind")
+        definition(args.definition)
 
     else:
         parser.print_help()
@@ -104,5 +211,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+
     except urllib.error.URLError:
         print("Check your internet connection!")
