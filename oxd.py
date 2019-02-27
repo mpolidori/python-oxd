@@ -19,13 +19,15 @@ def definition(word):
     results = []
 
     if "No exact matches found" in site:
-        print("No matches found.")
+        print("\n No matches found.\n")
 
     else:
         if link not in site:
             start = site.index(" of ") + 4
             end = start + site[start:].index(" ")
             word = site[start:end]
+
+        print("\n DEFINITION(S) OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
             if site[i:i + 16] == "class=\"ex\"> <em>":
@@ -53,9 +55,8 @@ def definition(word):
     results = [
         item for item in results if item not in ["EX,", "I, ", "SI, ", ""]]
 
-    print("\n {}:\n".format(word.upper()))
-
     for item in results:
+        prepend_symbol = "|"
         spaces = 1
 
         if results.index(item) > 1:
@@ -76,7 +77,12 @@ def definition(word):
         if "EX, " in item:
             item = item.replace("&lsquo;", "'")
             item = item.replace("&rsquo;", "'")
-            item = "  " + item[4:]
+
+            if second_last[:3] != "I, " and second_last[:4] != "SI, ":
+                item = " " + item[4:]
+
+            else:
+                item = "  " + item[4:]
 
         if item[:3] == "P, ":
             print(" {}\n".format(item[3:].upper()))
@@ -95,29 +101,36 @@ def definition(word):
             item = last[3:] + "  " + item
 
         if last[:4] == "SI, ":
+            prepend_symbol = "+"
             item = last[4:] + "  " + item
-            spaces += 1
+            spaces += 3
 
         if second_last[:3] == "I, ":
             spaces += 2
 
         if second_last[:4] == "SI, ":
-            spaces += 5
+            spaces += 7
 
         item = " " * spaces + item
 
         if item[spaces] != "'" and item[-1] != "'":
-            item = "|" + item
+            item = prepend_symbol + item
 
         if len(item) + 5 > term_width:
             if second_last[:3] == "I, " or second_last[:4] == "SI, ":
-                spaces += 3
+                spaces += 1
+
+            if last[:3] == "I, ":
+                spaces += 4
 
             if last[:4] == "SI, ":
-                spaces += 2
+                spaces += 6
 
             if item[spaces + 1] != "'" and item[-1] != "'":
-                spaces += 4
+                if last[:3] != "I, " and last[:4] != "SI, ":
+                    spaces += 1
+            else:
+                spaces += 2
 
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
@@ -140,13 +153,15 @@ def synonyms(word):
     results = []
 
     if "No exact matches found" in site:
-        print("No matches found.")
+        print("\n No matches found.\n")
 
     else:
         if link not in site:
             start = site.index(" of ") + 4
             end = start + site[start:].index(" ")
             word = site[start:end]
+
+        print("\n SYNONYMS OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
 
@@ -158,8 +173,6 @@ def synonyms(word):
 
     if len(results) > 50:
         results = results[:50]
-
-    print("\n {}:\n".format(word.upper()))
 
     results = [", ".join(results)]
 
