@@ -27,6 +27,9 @@ def definition(word):
             end = start + site[start:].index(" ")
             word = site[start:end]
 
+        if "_" in word:
+            word = word.replace("_", " ")
+
         print("\n  DEFINITION(S) OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
@@ -47,12 +50,13 @@ def definition(word):
                     site[i + 26:i + 26 + site[i + 26:].index("<")]))
 
             if site[i:i + 12] == "class=\"ind\">":
-                results.append(site[i + 12:i + 12 + site[i + 12:].index("<")])
+                results.append(
+                    "--D" + site[i + 12:i + 12 + site[i + 12:].index("<")])
 
             if site[i:i + 23] == "class=\"crossReference\">" \
                and site[i + 23] != "<":
                 results.append(
-                    site[i + 23:i + 23 + site[i + 23:].index("<")] +
+                    "CR, " + site[i + 23:i + 23 + site[i + 23:].index("<")] +
                     site[i + 23 + site[i + 23:].index(">") + 1:i + 23 +
                          site[i + 23:].index(">") + 1 + site[i
                          + 23 + site[i + 23:].index(">") + 1:].index("<")])
@@ -62,6 +66,8 @@ def definition(word):
 
     results = [
         item for item in results if item not in ["EX,", "I, ", "SI, ", ""]]
+
+    last_spaces = 0
 
     for item in results:
         prepend_symbol = "|"
@@ -103,9 +109,11 @@ def definition(word):
             continue
 
         if "&#39;" in item:
-            item = item.replace("&#39;", "\'")
+            item = item.replace("&#39;", "'")
 
         if last[:3] == "I, ":
+            if item[:4] == "CR, ":
+                item = item[4:]
             item = last[3:] + "  " + item
 
         if last[:4] == "SI, ":
@@ -114,19 +122,49 @@ def definition(word):
             spaces += 3
 
         if second_last[:3] == "I, ":
-            spaces += 2
+            if last[:4] == "CR, ":
+                item = "   " + item
+            else:
+                spaces += 2
 
         if second_last[:4] == "SI, ":
             spaces += 7
 
-        item = " " * spaces + item
+        # TODO: Fix CR, output under 2.1 "record"
 
-        if item[spaces] != "'" and item[-1] != "'":
+        if item[:4] == "CR, ":
+            if last[:3] == "--D":
+                spaces += 1
+            else:
+                spaces += 2
+            item = item[4:]
+
+        if (item[spaces] == "'" or item.count("'") == 2) and item[-1] == "'":
+            if last[:4] == "CR, ":
+                spaces = last_spaces - 1
+            if last[:3] == "I, " or last[:4] == "SI, ":
+                item = item[:item.index("'") - 1] + item[item.index("'"):]
+
+        item = " " * spaces + item
+        last_spaces = spaces
+
+        if last[:3] == "I, " or last[:4] == "SI, ":
             item = prepend_symbol + item
 
-        if len(item) + 5 > term_width:
+        if "--D" in item:
+            if len(item) <= 4:
+                continue
+            elif last[:3] != "I, " and last[:4] != "SI, ":
+                item = prepend_symbol + " " + item[spaces + 3:]
+            else:
+                item = item[:item.index("--D")] + item[item.index("--D") + 3:]
+
+        if len(item) + 4 > term_width:
             if second_last[:3] == "I, " or second_last[:4] == "SI, ":
-                spaces += 1
+                if last[:4] == "CR, ":
+                    spaces += 4
+                else:
+                    spaces += 1
 
             if last[:3] == "I, ":
                 spaces += 4
@@ -192,10 +230,10 @@ def synonyms(word):
         if "&#39;" in item:
             item = item.replace("&#39;", "\'")
 
-        if len(item) + 5 > term_width:
+        if len(item) + 4 > term_width:
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
-                print(" " + item[:term_width - (4 + space)])
+                print("  " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
 
         print("  " + item + "\n")
@@ -207,6 +245,7 @@ def main():
     parser.add_argument(
         "-d",
         "--definition",
+        nargs="*",
         help="show definition(s)",
         metavar=""
     )
@@ -224,6 +263,8 @@ def main():
         synonyms(args.synonyms)
 
     elif args.definition:
+        if len(args.definition) > 1:
+            args.definition = "_".join(args.definition)
         definition(args.definition)
 
     else:
