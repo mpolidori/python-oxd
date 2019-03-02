@@ -117,6 +117,8 @@ def definition(word):
             item = last[3:] + "  " + item
 
         if last[:4] == "SI, ":
+            if item[:4] == "CR, ":
+                item = item[4:]
             prepend_symbol = "+"
             item = last[4:] + "  " + item
             spaces += 3
@@ -128,9 +130,9 @@ def definition(word):
                 spaces += 2
 
         if second_last[:4] == "SI, ":
+            if last[:4] == "CR, ":
+                item = " " * 5 + item
             spaces += 7
-
-        # TODO: Fix CR, output under 2.1 "record"
 
         if item[:4] == "CR, ":
             if last[:3] == "--D":
@@ -162,7 +164,7 @@ def definition(word):
         if len(item) + 4 > term_width:
             if second_last[:3] == "I, " or second_last[:4] == "SI, ":
                 if last[:4] == "CR, ":
-                    spaces += 4
+                    spaces += 6
                 else:
                     spaces += 1
 
@@ -265,6 +267,8 @@ def main():
     elif args.definition:
         if len(args.definition) > 1:
             args.definition = "_".join(args.definition)
+        else:
+            args.definition = args.definition[0]
         definition(args.definition)
 
     else:
