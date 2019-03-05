@@ -19,6 +19,8 @@ def definition(word):
 
     else:
         word = word[0]
+        if "-" in word:
+            word = word.replace("-", "_")
 
     link = "https://en.oxforddictionaries.com/definition/{}".format(word)
     site = urllib.request.urlopen(link).read().decode("utf-8")
@@ -264,6 +266,14 @@ def synonyms(word):
     if term_width > 80:
         term_width = 80
 
+    if len(word) > 1:
+        word = "_".join(word)
+
+    else:
+        word = word[0]
+        if "-" in word:
+            word = word.replace("-", "_")
+
     link = "https://en.oxforddictionaries.com/thesaurus/{}".format(word)
     site = urllib.request.urlopen(link).read().decode("utf-8")
     results = []
@@ -276,6 +286,12 @@ def synonyms(word):
             start = site.index(" of ") + 4
             end = start + site[start:].index(" ")
             word = site[start:end]
+
+        if "_" in word:
+            word = word.replace("_", " ")
+
+        if "&#39;" in word:
+            word = word.replace("&#39;", "'")
 
         print("\n  SYNONYMS OF {}:\n".format(word.upper()))
 
@@ -296,9 +312,6 @@ def synonyms(word):
         if item == "":
             break
 
-        if "&#39;" in item:
-            item = item.replace("&#39;", "\'")
-
         if len(item) + 4 > term_width:
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
@@ -309,21 +322,26 @@ def synonyms(word):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="oxd",
+        usage="%(prog)s [option] WORD(S)"
+    )
 
     parser.add_argument(
         "-d",
         "--definition",
-        nargs="*",
+        nargs="+",
         help="show definition(s)",
-        metavar=""
+        metavar="WORD(S)"
+
     )
 
     parser.add_argument(
         "-s",
         "--synonyms",
+        nargs="+",
         help="show synonyms",
-        metavar=""
+        metavar="WORD(S)"
     )
 
     args = parser.parse_args()
