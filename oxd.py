@@ -14,19 +14,21 @@ def definition(word):
     if term_width > 80:
         term_width = 80
 
+    if term_width < 28:
+        print("Terminal width less than than 28 is not supported")
+        quit()
+
     if len(word) > 1:
         word = "_".join(word)
-
     else:
         word = word[0]
         if "-" in word:
             word = word.replace("-", "_")
 
-    link = "https://en.oxforddictionaries.com/definition/{}".format(word)
+    link = "https://en.oxforddictionaries.com/definition/us/{}".format(word)
 
     try:
         site = urllib.request.urlopen(link).read().decode("utf-8")
-
     except urllib.error.URLError:
         print("\n Check your internet connection!\n")
         quit()
@@ -41,7 +43,8 @@ def definition(word):
             print("\n  No matches found.\n")
             quit()
 
-        link = "https://en.oxforddictionaries.com/definition/{}".format(word)
+        link = \
+            "https://en.oxforddictionaries.com/definition/us/{}".format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
         results = []
 
@@ -115,18 +118,16 @@ def definition(word):
         prepend_symbol = "|"
         spaces = 1
 
-        if results.index(item) >= 1:
+        if results.index(item) > 1:
             last = results[results.index(item) - 1]
 
             if "&lsquo;" in item and "&lsquo;" in last:
                 continue
-
         else:
             last = ""
 
         if results.index(item) > 2:
             second_last = results[results.index(item) - 2]
-
         else:
             second_last = ""
 
@@ -141,7 +142,6 @@ def definition(word):
 
             if second_last[:3] != "-I-" and second_last[:4] != "-SI-":
                 item = " " + item[4:]
-
             else:
                 item = "  " + item[4:]
 
@@ -172,14 +172,12 @@ def definition(word):
         if second_last[:3] == "-I-":
             if last[:4] == "-CR-":
                 item = "   " + item
-
             else:
                 spaces += 2
 
         if second_last[:4] == "-SI-":
             if len(second_last[4:]) > 3:
                 v = 8
-
             else:
                 v = 7
 
@@ -192,13 +190,16 @@ def definition(word):
             if last[:3] == "-D-":
                 if second_last[:3] == "-I-":
                     spaces += len(second_last[3:]) + 1
-
                 elif second_last[:4] == "-SI-":
                     spaces += len(second_last[4:]) - 1
-
                 else:
                     spaces += 1
-
+            elif results.index(item) < len(results) - 2 \
+                    and (results[results.index(item) + 1][:4] == "-SI-"
+                         or results[results.index(item) + 2][:4] == "-SI-"):
+                spaces += 4
+            elif last[:3] == "-P-":
+                spaces += 3
             else:
                 spaces += 2
 
@@ -206,9 +207,10 @@ def definition(word):
 
         if (item[spaces] == "'" or item.count("'") >= 2) and item[-1] == "'":
             if last[:4] == "-CR-":
-                if second_last[:4] == "-EX-":
+                if second_last[:4] == "-EX-" \
+                     or (second_last[:3] == "-P-"
+                         and second_last == results[-3]):
                     spaces = last_spaces - 1
-
                 else:
                     spaces = last_spaces - 3
 
@@ -233,8 +235,11 @@ def definition(word):
         if last[:3] == "-I-" or last[:4] == "-SI-":
             item = prepend_symbol + item
 
-        if last[:3] == "-P-" and item[spaces:] == results[-1][4:]:
-            item = prepend_symbol + item[2:]
+        if last[:3] == "-P-" and item[spaces:] in results[-1]:
+            if item[spaces:spaces + 3] == "-D-":
+                item = prepend_symbol + "  " + item[spaces + 3:]
+            else:
+                item = prepend_symbol + item[2:]
 
         if (last[:4] == "-EX-" and second_last[:3] == "-D-"
                 and results.index(last) < len(results) - 3
@@ -244,14 +249,13 @@ def definition(word):
 
         if item[3:] in results[-1] and last[:3] == "-P-":
             if last == results[0]:
-                item == prepend_symbol + item[4:]
+                item = prepend_symbol + item[4:]
             else:
                 item = prepend_symbol + item[2:]
 
         if "-D-" in item:
             if last[:3] != "-I-" and last[:4] != "-SI-":
                 item = prepend_symbol + " " + item[spaces + 3:]
-
             else:
                 item = item[:item.index("-D-")] + item[item.index("-D-") + 3:]
 
@@ -262,14 +266,12 @@ def definition(word):
             if second_last[:3] == "-I-":
                 if last[:4] == "-CR-":
                     spaces += 7
-
                 else:
                     spaces += 1
 
             if second_last[:4] == "-SI-":
                 if last[:4] == "-CR-":
                     spaces += 8
-
                 else:
                     spaces += 1
 
@@ -282,7 +284,6 @@ def definition(word):
             if item[spaces + 1] != "'" and item[-1] != "'":
                 if last[:3] != "-I-" and last[:4] != "-SI-":
                     spaces += 1
-
             else:
                 spaces += 2
 
@@ -290,7 +291,6 @@ def definition(word):
                 space = item[:term_width - 4][::-1].index(" ")
                 print(item[:term_width - (4 + space)])
                 item = " " * spaces + item[term_width - (4 + space):]
-
         print(item + "\n")
 
 
@@ -302,9 +302,12 @@ def synonyms(word):
     if term_width > 80:
         term_width = 80
 
+    if term_width < 28:
+        print("Terminal width less than than 28 is not supported")
+        quit()
+
     if len(word) > 1:
         word = "_".join(word)
-
     else:
         word = word[0]
         if "-" in word:
@@ -314,7 +317,6 @@ def synonyms(word):
 
     try:
         site = urllib.request.urlopen(link).read().decode("utf-8")
-
     except urllib.error.URLError:
         print("\n Check your internet connection!\n")
         quit()
@@ -339,7 +341,6 @@ def synonyms(word):
         print("\n  SYNONYMS OF {}:\n".format(word.upper()))
 
         for i in range(len(site)):
-
             if site[i:i + 12] == "class=\"syn\">":
                 results += \
                     site[i + 12:i + 12 + site[i + 12:].index("<")].split(", ")
@@ -354,13 +355,11 @@ def synonyms(word):
     for item in results:
         if item == "":
             break
-
         if len(item) + 4 > term_width:
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
                 print("  " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
-
         print("  " + item + "\n")
 
 
@@ -369,16 +368,13 @@ def main():
         prog="oxd",
         usage="%(prog)s [option] WORD(S)"
     )
-
     parser.add_argument(
         "-d",
         "--definition",
         nargs="+",
         help="show definition(s)",
         metavar="WORD(S)"
-
     )
-
     parser.add_argument(
         "-s",
         "--synonyms",
@@ -386,15 +382,12 @@ def main():
         help="show synonyms",
         metavar="WORD(S)"
     )
-
     args = parser.parse_args()
 
     if args.synonyms:
         synonyms(args.synonyms)
-
     elif args.definition:
         definition(args.definition)
-
     else:
         parser.print_help()
 
