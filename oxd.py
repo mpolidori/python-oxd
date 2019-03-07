@@ -23,7 +23,14 @@ def definition(word):
             word = word.replace("-", "_")
 
     link = "https://en.oxforddictionaries.com/definition/{}".format(word)
-    site = urllib.request.urlopen(link).read().decode("utf-8")
+
+    try:
+        site = urllib.request.urlopen(link).read().decode("utf-8")
+
+    except urllib.error.URLError:
+        print("\n Check your internet connection!\n")
+        quit()
+
     results = []
 
     if "No exact matches found" in site:
@@ -304,7 +311,14 @@ def synonyms(word):
             word = word.replace("-", "_")
 
     link = "https://en.oxforddictionaries.com/thesaurus/{}".format(word)
-    site = urllib.request.urlopen(link).read().decode("utf-8")
+
+    try:
+        site = urllib.request.urlopen(link).read().decode("utf-8")
+
+    except urllib.error.URLError:
+        print("\n Check your internet connection!\n")
+        quit()
+
     results = []
 
     if "No exact matches found" in site:
@@ -387,11 +401,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    """
-    try:
-        main()
-
-    except urllib.error.URLError:
-        print("Check your internet connection!")
-    """
