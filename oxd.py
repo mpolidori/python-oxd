@@ -212,20 +212,23 @@ def definition(word):
            and last[:3] != "-I-":
             spaces += len(third_last[:4]) + 1
 
-        if item[:4] == "-CR-" and item != results[-2]:
-            if last[:3] == "-D-":
-                if second_last[:3] == "-I-":
-                    spaces += len(second_last[3:]) + 1
-                elif second_last[:4] == "-SI-":
-                    spaces += len(second_last[4:]) - 1
+        if item[:4] == "-CR-":
+            if len(results) > 1 and item != results[-2]:
+                if last[:3] == "-D-":
+                    if second_last[:3] == "-I-":
+                        spaces += len(second_last[3:]) + 1
+                    elif second_last[:4] == "-SI-":
+                        spaces += len(second_last[4:]) - 1
+                    else:
+                        spaces += 1
+                elif position < len(results) - 2 \
+                        and (next[:4] == "-SI-"
+                             or second_next[:4] == "-SI-"):
+                    spaces += 4
+                elif last[:3] == "-P-":
+                    spaces += 3
                 else:
-                    spaces += 1
-            elif position < len(results) - 2 \
-                    and (next[:4] == "-SI-"
-                         or second_next[:4] == "-SI-"):
-                spaces += 4
-            elif last[:3] == "-P-":
-                spaces += 3
+                    spaces += 2
             else:
                 spaces += 2
 
@@ -271,7 +274,7 @@ def definition(word):
                 item = prepend_symbol + item[:spaces] + item[spaces + 4:]
 
         if item[spaces:spaces + 4] == "-DO-":
-            item = prepend_symbol + item.replace("-DO-", "")
+            item = prepend_symbol + " " + item[1:].replace("-DO-", "")
 
         if last[:3] == "-I-" or last[:4] == "-SI-":
             item = prepend_symbol + item
@@ -283,6 +286,11 @@ def definition(word):
                 else:
                     item = prepend_symbol + item[2:]
 
+            if position + 1 < len(results) \
+               and results[position + 1][:3] == "-P-":
+                if item[spaces:spaces + 3] == "-D-":
+                    item = prepend_symbol + "   " + item[spaces + 3:]
+
             if position + 1 <= len(results) - 1 \
                and next[:3] == "-P-":
                 item = prepend_symbol + item[3:]
@@ -293,11 +301,15 @@ def definition(word):
                 or len(results) == 1) and "-D-" not in item:
             item = prepend_symbol + item[2:]
 
-        if item[3:] in results[-1] and last[:3] == "-P-":
-            if results[position][:3] == "-D-":
+        if item[3:] in results[-1] and "See" not in item and last[:3] == "-P-":
+            if results[position][:3] == "-D-" and position != 1:
                 item = item[:1] + " " + item[2:]
+
             if position == 1:
-                item = prepend_symbol + item[4:]
+                if len(results) == 2:
+                    item = prepend_symbol + item[2:]
+                else:
+                    item = prepend_symbol + item[4:]
             else:
                 item = prepend_symbol + item[2:]
 
