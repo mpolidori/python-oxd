@@ -1,3 +1,3 @@
 # oxd
 
-is a CLI to retrieve definitions and synonyms from the [Oxford Dictionaries website](https://en.oxforddictionaries.com).
+is a CLI to retrieve definitions and synonyms from the [Oxford dictionaries](https://en.oxforddictionaries.com) website.

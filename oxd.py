@@ -426,6 +426,7 @@ def synonyms(word):
 def main():
     parser = argparse.ArgumentParser(
         prog="oxd",
+        description="oxd is a CLI for the Oxford dictionaries website.",
         usage="%(prog)s [option] WORD(S)"
     )
     parser.add_argument(
