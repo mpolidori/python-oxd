@@ -113,7 +113,6 @@ def definition(word):
 
     last_spaces = 0
     position = 0
-    print(results)
 
     for item in results:
         prepend_symbol = "|"
