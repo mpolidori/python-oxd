@@ -29,7 +29,7 @@ def definition(word):
     try:
         site = urllib.request.urlopen(link).read().decode("utf-8")
     except urllib.error.URLError:
-        print("\n Check your internet connection!\n")
+        print("\n  Check your internet connection!\n")
         quit()
 
     results = []
@@ -138,9 +138,9 @@ def definition(word):
             third_last = ""
 
         if position < len(results) - 1:
-            next = results[position + 1]
+            first_next = results[position + 1]
         else:
-            next = ""
+            first_next = ""
 
         if position < len(results) - 2:
             second_next = results[position + 2]
@@ -150,7 +150,7 @@ def definition(word):
         if item[:4] == "-EX-":
             if position + 1 < len(results) - 1:
                 if last[:4] == "-CR-" \
-                        and next[:4] == "-SI-":
+                        and first_next[:4] == "-SI-":
                     position += 1
                     continue
 
@@ -292,7 +292,7 @@ def definition(word):
                     item = prepend_symbol + "   " + item[spaces + 3:]
 
             if position + 1 <= len(results) - 1 \
-               and next[:3] == "-P-":
+               and first_next[:3] == "-P-":
                 item = prepend_symbol + item[3:]
 
         if (last[:4] == "-EX-" and second_last[:3] == "-D-"
@@ -378,7 +378,7 @@ def synonyms(word):
     try:
         site = urllib.request.urlopen(link).read().decode("utf-8")
     except urllib.error.URLError:
-        print("\n Check your internet connection!\n")
+        print("\n  Check your internet connection!\n")
         quit()
 
     results = []
