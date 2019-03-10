@@ -113,6 +113,7 @@ def definition(word):
 
     last_spaces = 0
     position = 0
+    print(results)
 
     for item in results:
         prepend_symbol = "|"
@@ -222,7 +223,7 @@ def definition(word):
                     else:
                         spaces += 1
                 elif position < len(results) - 2 \
-                        and (next[:4] == "-SI-"
+                        and (first_next[:4] == "-SI-"
                              or second_next[:4] == "-SI-"):
                     spaces += 4
                 elif last[:3] == "-P-":
@@ -317,7 +318,12 @@ def definition(word):
             if last[:3] != "-I-" and last[:4] != "-SI-":
                 item = prepend_symbol + " " + item[spaces + 3:]
             else:
-                item = item[:item.index("-D-")] + item[item.index("-D-") + 3:]
+                if third_last[:3] == "-I-" and last[:4] == "-SI-":
+                    item = item[0] + " " + item[1:item.index("-D-")] \
+                        + item[item.index("-D-") + 3:]
+                else:
+                    item = item[:item.index("-D-")] \
+                        + item[item.index("-D-") + 3:]
 
         if "&#39;" in item:
             item = item.replace("&#39;", "'")
