@@ -254,7 +254,9 @@ def definition(word):
 
         if last[:4] == "-CR-" and last == results[-2]:
             if third_last[:4] == "-SI-":
-                spaces += 2
+                if item.count("'") < 2 and second_last[:3] != "-D-" \
+                   and third_last[:4] != "-SI-":
+                    spaces += 2
             else:
                 spaces += 1
 
