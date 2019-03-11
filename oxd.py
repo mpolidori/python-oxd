@@ -52,8 +52,8 @@ def definition(word):
             quit()
 
     if link not in site:
-        start = site.index(" of ") + 4
-        end = start + site[start:].index(" ")
+        start = site.index("definition of ") + 14
+        end = start + site[start:].index(" in")
         word = site[start:end]
 
     if "_" in word:
@@ -206,6 +206,9 @@ def definition(word):
 
             spaces += v
 
+        if last[:4] == "-SI-" and third_last[:3] == "-I-":
+            spaces -= 1
+
         if position + 1 <= len(results) - 2 \
            and third_last[:4] == "-SI-" \
            and second_next[:4] == "-SI-" \
@@ -242,7 +245,10 @@ def definition(word):
                     else:
                         spaces = last_spaces - 2
                 elif second_last[:4] == "-SI-":
-                    spaces = len(second_last[4:]) - last_spaces + 1
+                    if results[position] == results[-1]:
+                        spaces = len(second_last[4:]) - last_spaces + 1
+                    else:
+                        spaces = len(second_last[4:]) - last_spaces + 2
                 else:
                     spaces = last_spaces - 3
 
