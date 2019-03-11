@@ -115,6 +115,7 @@ def definition(word):
     position = 0
 
     for item in results:
+        # TODO: fix 4 part output (ex. call) and SI followed by SI without EX (ex. 1.9, 1.10 in line)
         prepend_symbol = "|"
         spaces = 1
 
@@ -338,13 +339,13 @@ def definition(word):
         if len(item) + 4 > term_width:
             if second_last[:3] == "-I-":
                 if last[:4] == "-CR-":
-                    spaces += 7
+                    spaces += len(second_last[3:]) + 4
                 else:
                     spaces += 1
 
             if second_last[:4] == "-SI-":
                 if last[:4] == "-CR-":
-                    spaces += 8
+                    spaces += len(second_last[4:]) + 5
                 else:
                     spaces += 1
 
