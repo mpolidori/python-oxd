@@ -33,6 +33,7 @@ def definition(word):
         quit()
 
     results = []
+    pronunciations = []
 
     if "No exact matches found" in site:
         try:
@@ -45,7 +46,6 @@ def definition(word):
         link = \
             "https://en.oxforddictionaries.com/definition/us/{}".format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
-        results = []
 
         if "No exact matches found" in site:
             print("\n  No matches found.\n")
@@ -104,6 +104,14 @@ def definition(word):
         if site[i:i + 15] == "class=\"phrase\">":
             break
 
+    for j in range(len(site), 0, -1):
+        if site[j:j + 25] == "class=\"phoneticspelling\">":
+            pronunciations.append(site[j + 25:j + 25
+                                  + site[j + 25:].index("<")])
+
+        if site[j:j + 15] == "class=\"phrase\">":
+            break
+
     if len(results) > 1:
         results = [
             results[i] for i in range(len(results))
@@ -111,11 +119,18 @@ def definition(word):
             and not (results[i][:4] == "-EX-"
                      and results[i - 1][:4] == "-EX-")]
 
+    if len(pronunciations) > 0:
+        if len(pronunciations) > 1:
+            pronunciations = ", ".join(pronunciations)
+        else:
+            pronunciations = pronunciations[0]
+        print("  " + pronunciations + "\n")
+
     last_spaces = 0
     position = 0
 
     for item in results:
-        # TODO: fix 4 part output (ex. call) and SI followed by SI without EX (ex. 1.9, 1.10 in line)
+        # TODO: fix 4 part output (ex. call)
         prepend_symbol = "|"
         spaces = 1
 
@@ -188,7 +203,7 @@ def definition(word):
 
             prepend_symbol = "+"
             item = last[4:] + "  " + item
-            spaces += 3
+            spaces += len(last[4:])
 
         if second_last[:3] == "-I-":
             if last[:4] == "-CR-":
@@ -197,15 +212,16 @@ def definition(word):
                 spaces += len(second_last[3:]) + 1
 
         if second_last[:4] == "-SI-":
-            if len(second_last[4:]) > 3:
-                v = 8
-            else:
-                v = 7
-
             if last[:4] == "-CR-":
-                item = " " * v + item
+                item = " " * (len(second_last[4:]) + 4) + item
 
-            spaces += v
+            spaces += len(second_last[4:]) + 4
+
+        if third_last[:4] == "-SI-" and last[:4] == "-SI-" \
+           and first_next[:4] != "-SI-" and first_next[:3] != "-I-" \
+           and second_next[:3] != "-P-" and second_next[:3] != "-I-" \
+           and position < len(results) - 2:
+            spaces -= 5
 
         if last[:4] == "-SI-" and third_last[:3] == "-I-":
             spaces -= 1
@@ -250,10 +266,12 @@ def definition(word):
                         spaces = len(second_last[4:]) - last_spaces + 1
                     else:
                         spaces = len(second_last[4:]) - last_spaces + 2
+                elif first_next[:3] == "-P-":
+                    spaces = last_spaces - 2
                 else:
                     spaces = last_spaces - 3
 
-            if second_last[:3] == "-D-":
+            if second_last[:3] == "-D-" and third_last[:3] != "-I-":
                 spaces = last_spaces - 1
 
             if last[:3] == "-I-" or last[:4] == "-SI-":
@@ -273,8 +291,11 @@ def definition(word):
         item = " " * spaces + item
         last_spaces = spaces
 
-        if last[:3] == "-P-" and item.count("'") >= 2 and item[-1] == "'":
-            item = prepend_symbol + item[1:]
+        if last[:3] == "-P-":
+            if item.count("'") >= 2 and item[-1] == "'":
+                item = prepend_symbol + item[1:]
+            elif results[position][:4] == "-CR-":
+                item = prepend_symbol + item[2:]
 
         if item[spaces:spaces + 4] == "-CR-":
             if second_last[:4] == "-SI-":
@@ -348,6 +369,11 @@ def definition(word):
                     spaces += len(second_last[4:]) + 5
                 else:
                     spaces += 1
+
+            # NEW
+
+            if third_last[:3] == "-I-" and last[:4] == "-SI-":
+                spaces += 1
 
             if last[:3] == "-I-":
                 spaces += len(last[3:]) + 3
