@@ -121,7 +121,7 @@ def definition(word):
 
     if len(pronunciations) > 0:
         if len(pronunciations) > 1:
-            pronunciations = ", ".join(pronunciations)
+            pronunciations = ", ".join(set(pronunciations))
         else:
             pronunciations = pronunciations[0]
         print("  " + pronunciations + "\n")
@@ -130,7 +130,6 @@ def definition(word):
     position = 0
 
     for item in results:
-        # TODO: fix 4 part output (ex. call)
         prepend_symbol = "|"
         spaces = 1
 
@@ -249,6 +248,11 @@ def definition(word):
                     spaces += 3
                 else:
                     spaces += 2
+            elif position == len(results) - 2 \
+                    and results[position][:4] == "-CR-" \
+                    and last[:4] == "-EX-" and second_last[:3] == "-D-" \
+                    and third_last[:3] == "-I-":
+                spaces += len(third_last[3:]) + 3
             else:
                 spaces += 2
 
