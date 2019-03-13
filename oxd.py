@@ -222,8 +222,9 @@ def definition(word):
            and position < len(results) - 2:
             spaces -= 5
 
-        if last[:4] == "-SI-" and third_last[:3] == "-I-":
-            spaces -= 1
+        if last[:4] == "-SI-":
+            if third_last[:3] == "-I-" or len(last[4:]) > 3:
+                spaces -= 1
 
         if position + 1 <= len(results) - 2 \
            and third_last[:4] == "-SI-" \
@@ -246,15 +247,18 @@ def definition(word):
                     spaces += 4
                 elif last[:3] == "-P-":
                     spaces += 3
-                else:
+                elif position != 0:
                     spaces += 2
-            elif position == len(results) - 2 \
-                    and results[position][:4] == "-CR-" \
-                    and last[:4] == "-EX-" and second_last[:3] == "-D-" \
-                    and third_last[:3] == "-I-":
-                spaces += len(third_last[3:]) + 3
+            elif len(results) > 1 and position == len(results) - 2:
+                if last[:4] == "-EX-" and second_last[:3] == "-D-":
+                    if third_last[:3] == "-I-":
+                        spaces += len(third_last[3:]) + 3
+                    if third_last[:3] == "-P-":
+                        spaces += 1
+                elif last[:3] == "-D-" and second_last[:3] == "-P-":
+                    spaces += 1
             else:
-                spaces += 2
+                spaces += 1
 
             item = item[4:]
 
@@ -271,7 +275,9 @@ def definition(word):
                     else:
                         spaces = len(second_last[4:]) - last_spaces + 2
                 elif first_next[:3] == "-P-":
-                    spaces = last_spaces - 2
+                    spaces = last_spaces - 1
+                elif second_last[:3] == "-D-" and third_last[:3] == "-P-":
+                    spaces -= 1
                 else:
                     spaces = last_spaces - 3
 
@@ -286,7 +292,7 @@ def definition(word):
                 if item.count("'") < 2 and second_last[:3] != "-D-" \
                    and third_last[:4] != "-SI-":
                     spaces += 2
-            else:
+            elif third_last[:3] != "-P-":
                 spaces += 1
 
         if last[:4] == "-EX-" and second_last[:3] == "-P-":
@@ -301,10 +307,13 @@ def definition(word):
             elif results[position][:4] == "-CR-":
                 item = prepend_symbol + item[2:]
 
+        if position == 0 and results[position][:4] == "-CR-":
+            item = prepend_symbol + item
+
         if item[spaces:spaces + 4] == "-CR-":
             if second_last[:4] == "-SI-":
                 item = "  " + item[:spaces] + item[spaces + 4:]
-            else:
+            elif "|" not in item:
                 item = prepend_symbol + item[:spaces] + item[spaces + 4:]
 
         if item[spaces:spaces + 4] == "-DO-":
@@ -317,7 +326,7 @@ def definition(word):
             if item[spaces:] in results[-1]:
                 if item[spaces:spaces + 3] == "-D-":
                     item = prepend_symbol + "  " + item[spaces + 3:]
-                else:
+                elif "|" not in item:
                     item = prepend_symbol + item[2:]
 
             if position + 1 < len(results) \
@@ -373,8 +382,6 @@ def definition(word):
                     spaces += len(second_last[4:]) + 5
                 else:
                     spaces += 1
-
-            # NEW
 
             if third_last[:3] == "-I-" and last[:4] == "-SI-":
                 spaces += 1
