@@ -14,7 +14,7 @@ def definition(word):
         term_width = 80
 
     if term_width < 28:
-        print("Terminal width less than than 28 is not supported")
+        print("Terminal width less than 28 is not supported")
         quit()
 
     if len(word) > 1:
@@ -373,7 +373,7 @@ def definition(word):
         if len(item) + 4 > term_width:
             if second_last[:3] == "-I-":
                 if last[:4] == "-CR-":
-                    spaces += len(second_last[3:]) + 4
+                    spaces += len(second_last[3:]) + 3
                 else:
                     spaces += 1
 
@@ -414,7 +414,7 @@ def synonyms(word):
         term_width = 80
 
     if term_width < 28:
-        print("Terminal width less than than 28 is not supported")
+        print("Terminal width less than 28 is not supported")
         quit()
 
     if len(word) > 1:
