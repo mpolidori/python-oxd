@@ -21,6 +21,8 @@ $ oxd -d opaque
 
   DEFINITION(S) OF OPAQUE:
 
+  /ōˈpāk/, /oʊˈpeɪk/
+
   ADJECTIVE
 
 | 1  Not able to be seen through; not transparent.
