@@ -109,7 +109,7 @@ def definition(word):
             pronunciations.append(site[j + 25:j + 25
                                   + site[j + 25:].index("<")])
 
-        if site[j:j + 15] == "class=\"phrase\">":
+        if site[j:j + 13] == "class=\"pron\">":
             break
 
     if len(results) > 1:
@@ -245,9 +245,7 @@ def definition(word):
                         and (first_next[:4] == "-SI-"
                              or second_next[:4] == "-SI-"):
                     spaces += 4
-                elif last[:3] == "-P-":
-                    spaces += 3
-                elif position != 0:
+                elif position != 0 and last[:3] != "-P-":
                     spaces += 2
             elif len(results) > 1 and position == len(results) - 2:
                 if last[:4] == "-EX-" and second_last[:3] == "-D-":
@@ -278,7 +276,7 @@ def definition(word):
                     spaces = last_spaces - 1
                 elif second_last[:3] == "-D-" and third_last[:3] == "-P-":
                     spaces -= 1
-                else:
+                elif position != len(results) - 1:
                     spaces = last_spaces - 3
 
             if second_last[:3] == "-D-" and third_last[:3] != "-I-":
@@ -289,10 +287,9 @@ def definition(word):
 
         if last[:4] == "-CR-" and last == results[-2]:
             if third_last[:4] == "-SI-":
-                if item.count("'") < 2 and second_last[:3] != "-D-" \
-                   and third_last[:4] != "-SI-":
+                if item.count("'") < 2 and second_last[:3] != "-D-":
                     spaces += 2
-            elif third_last[:3] != "-P-":
+            elif second_last[:3] != "-P-" and third_last[:3] != "-P-":
                 spaces += 1
 
         if last[:4] == "-EX-" and second_last[:3] == "-P-":
@@ -304,8 +301,9 @@ def definition(word):
         if last[:3] == "-P-":
             if item.count("'") >= 2 and item[-1] == "'":
                 item = prepend_symbol + item[1:]
-            elif results[position][:4] == "-CR-":
-                item = prepend_symbol + item[2:]
+            elif results[position][:4] == "-CR-" \
+                    and position != len(results) - 1:
+                item = prepend_symbol + item
 
         if position == 0 and results[position][:4] == "-CR-":
             item = prepend_symbol + item
@@ -373,7 +371,10 @@ def definition(word):
         if len(item) + 4 > term_width:
             if second_last[:3] == "-I-":
                 if last[:4] == "-CR-":
-                    spaces += len(second_last[3:]) + 3
+                    if first_next[:3] == "-I-":
+                        spaces += len(second_last[3:]) + 5
+                    if first_next[:3] == "-P-":
+                        spaces += len(second_last[3:]) + 3
                 else:
                     spaces += 1
 
