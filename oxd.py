@@ -34,6 +34,7 @@ def definition(word):
 
     results = []
     pronunciations = []
+    origin = ""
 
     if "No exact matches found" in site:
         try:
@@ -62,7 +63,7 @@ def definition(word):
     if "&#39;" in word:
         word = word.replace("&#39;", "'")
 
-    print("\n  DEFINITION(S) OF {}:\n".format(word.upper()))
+    print("\n  DEFINITION OF {}:\n".format(word.upper()))
 
     for i in range(len(site)):
         if site[i:i + 16] == "class=\"ex\"> <em>":
@@ -109,7 +110,9 @@ def definition(word):
             pronunciations.append(site[j + 25:j + 25
                                   + site[j + 25:].index("<")])
 
-        if site[j:j + 13] == "class=\"pron\">":
+        if site[j:j + 8] == ">Origin<":
+            origin = site[j + site[j:].index("<p>") + 3:
+                          j + site[j:].index("</p>")]
             break
 
     if len(results) > 1:
@@ -118,13 +121,6 @@ def definition(word):
             if results[i] not in "-EX-P-I-SI-D-DO-"
             and not (results[i][:4] == "-EX-"
                      and results[i - 1][:4] == "-EX-")]
-
-    if len(pronunciations) > 0:
-        if len(pronunciations) > 1:
-            pronunciations = ", ".join(set(pronunciations))
-        else:
-            pronunciations = pronunciations[0]
-        print("  " + pronunciations + "\n")
 
     last_spaces = 0
     position = 0
@@ -403,8 +399,30 @@ def definition(word):
                 space = item[:term_width - 4][::-1].index(" ")
                 print(item[:term_width - (4 + space)])
                 item = " " * spaces + item[term_width - (4 + space):]
+
         print(item + "\n")
         position += 1
+
+    if len(origin) > 0:
+        origin = "  " + origin
+        print("  ORIGIN\n")
+
+        if len(origin) + 4 > term_width:
+            while len(origin) + 4 >= term_width:
+                space = origin[:term_width - 4][::-1].index(" ")
+                print(origin[:term_width - (4 + space)])
+                origin = "  " + origin[term_width - (4 + space):]
+
+        print(origin + "\n")
+
+    if len(pronunciations) > 0:
+        if len(pronunciations) > 1:
+            pronunciations = ", ".join(set(pronunciations))
+        else:
+            pronunciations = pronunciations[0]
+
+        print("  PRONUNCIATION\n")
+        print("  " + pronunciations + "\n")
 
 
 def synonyms(word):
