@@ -476,20 +476,18 @@ def synonyms(word):
                     site[i + 12:i + 12 + site[i + 12:].index("<")].split(", ")
 
     results = [item for item in results if len(item) > 0]
-
-    if len(results) > 50:
-        results = results[:50]
-
     results = [", ".join(results)]
 
     for item in results:
-        if item == "":
-            break
+        if "&#39;" in item:
+            item = item.replace("&#39;", "'")
+
         if len(item) + 4 > term_width:
             while len(item) + 4 >= term_width:
                 space = item[:term_width - 4][::-1].index(" ")
                 print("  " + item[:term_width - (4 + space)])
                 item = item[term_width - (4 + space):]
+
         print("  " + item + "\n")
 
 
