@@ -66,6 +66,7 @@ $ oxd -s opaque
   confusing, enigmatic, inexplicable, unexplained, concealed, hidden,
   unfathomable, incomprehensible, impenetrable, vague, ambiguous, Delphic,
   indefinite, indistinct, hazy, foggy, nebulous, equivocal, doubtful,
-  dubious, oblique, elliptical, oracular, cryptic, deep, abstruse, recondite
+  dubious, oblique, elliptical, oracular, cryptic, deep, abstruse, recondite,
+  arcane, esoteric, recherché, as clear as mud
 
 ```
