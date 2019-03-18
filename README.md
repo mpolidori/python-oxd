@@ -19,7 +19,7 @@ Definition:
 ```
 $ oxd -d opaque
 
-  DEFINITION(S) OF OPAQUE:
+  DEFINITION OF OPAQUE:
 
   ADJECTIVE
 
