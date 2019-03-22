@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
-import requests
 import subprocess
-import urllib
+import urllib.error
+import urllib.request
 
 
 def definition(word):
