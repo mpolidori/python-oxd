@@ -455,7 +455,7 @@ def synonyms(word):
 
     if "No exact matches found" in site:
         print("\n  No matches found.\n")
-
+        quit()
     else:
         if link not in site:
             start = site.index(" of ") + 4
