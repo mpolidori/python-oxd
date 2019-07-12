@@ -101,6 +101,10 @@ def definition(word):
             and not (results[i][:4] == "-EX-"
                      and results[i - 1][:4] == "-EX-")]
 
+        results = [
+            results[i] for i in range(len(results) - 1)
+            if results[i] != results[i + 1]] + [results[-1]]
+
     last_spaces = 0
     position = 0
 
@@ -194,7 +198,7 @@ def definition(word):
         if third_last[:4] == "-SI-" and last[:4] == "-SI-" \
            and first_next[:4] != "-SI-" and first_next[:3] != "-I-" \
            and second_next[:3] != "-P-" and second_next[:3] != "-I-" \
-           and position < len(results) - 2:
+           and position < len(results) - 2 and "-D-" not in item:
             spaces -= 5
 
         if last[:4] == "-SI-":
@@ -402,11 +406,10 @@ def definition(word):
         origin = "  " + origin
         print("  ORIGIN\n")
 
-        if len(origin) + 4 > term_width:
-            while len(origin) + 4 >= term_width:
-                space = origin[:term_width - 4][::-1].index(" ")
-                print(origin[:term_width - (4 + space)])
-                origin = "  " + origin[term_width - (4 + space):]
+        while len(origin) + 4 >= term_width:
+            space = origin[:term_width - 4][::-1].index(" ")
+            print(origin[:term_width - (4 + space)])
+            origin = "  " + origin[term_width - (4 + space):]
 
         print(origin + "\n")
 
