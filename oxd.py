@@ -7,31 +7,10 @@ import urllib.request
 
 
 def definition(word):
-    term_width = int(
-        subprocess.check_output(['stty', 'size']).decode().split()[1])
-
-    if term_width > 80:
-        term_width = 80
-
-    if term_width < 28:
-        print("Terminal width less than 28 is not supported")
-        quit()
-
-    if len(word) > 1:
-        word = "_".join(word)
-    else:
-        word = word[0]
-        if "-" in word:
-            word = word.replace("-", "_")
-
-    link = "https://en.oxforddictionaries.com/definition/us/{}".format(word)
-
-    try:
-        site = urllib.request.urlopen(link).read().decode("utf-8")
-    except urllib.error.URLError:
-        print("\n  Check your internet connection!\n")
-        quit()
-
+    term_width = terminal_width()
+    word = format_word(word)
+    link = "https://www.lexico.com/en/definition/{}".format(word)
+    site = url_check(link)
     results = []
     pronunciations = []
     origin = ""
@@ -404,6 +383,22 @@ def definition(word):
         position += 1
 
     if len(origin) > 0:
+        if "<" in origin:
+            new_origin = ""
+            switch = False
+
+            for char in origin:
+                if char == "<":
+                    switch = True
+
+                if not switch:
+                    new_origin += char
+
+                if char == ">":
+                    switch = False
+
+            origin = new_origin
+
         origin = "  " + origin
         print("  ORIGIN\n")
 
@@ -425,17 +420,7 @@ def definition(word):
         print("  " + pronunciations + "\n")
 
 
-def synonyms(word):
-    term_width = int(
-        subprocess.check_output(['stty', 'size']).decode().split()[1])
-
-    if term_width > 80:
-        term_width = 80
-
-    if term_width < 28:
-        print("Terminal width less than 28 is not supported")
-        quit()
-
+def format_word(word):
     if len(word) > 1:
         word = "_".join(word)
     else:
@@ -443,14 +428,14 @@ def synonyms(word):
         if "-" in word:
             word = word.replace("-", "_")
 
-    link = "https://en.oxforddictionaries.com/thesaurus/{}".format(word)
+    return word
 
-    try:
-        site = urllib.request.urlopen(link).read().decode("utf-8")
-    except urllib.error.URLError:
-        print("\n  Check your internet connection!\n")
-        quit()
 
+def synonyms(word):
+    term_width = terminal_width()
+    word = format_word(word)
+    link = "https://www.lexico.com/en/synonym/{}".format(word)
+    site = url_check(link)
     results = []
 
     if "No exact matches found" in site:
@@ -489,6 +474,30 @@ def synonyms(word):
                 item = item[term_width - (4 + space):]
 
         print("  " + item + "\n")
+
+
+def terminal_width():
+    term_width = int(
+        subprocess.check_output(['stty', 'size']).decode().split()[1])
+
+    if term_width > 80:
+        term_width = 80
+
+    if term_width < 30:
+        print("Terminal width less than 30 is not supported")
+        quit()
+
+    return term_width
+
+
+def url_check(link):
+    try:
+        site = urllib.request.urlopen(link).read().decode("utf-8")
+    except urllib.error.URLError:
+        print("\n  Check your internet connection!\n")
+        quit()
+
+    return site
 
 
 def main():
