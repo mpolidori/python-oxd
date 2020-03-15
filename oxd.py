@@ -9,7 +9,8 @@ import urllib.request
 def definition(word):
     term_width = terminal_width()
     word = format_word(word)
-    link = "https://www.lexico.com/en/definition/{}".format(word)
+    link = \
+        "https://www.lexico.com/search?filter=dictionary&query={}".format(word)
     site = url_check(link)
     results = []
     pronunciations = []
@@ -24,17 +25,13 @@ def definition(word):
             quit()
 
         link = \
-            "https://en.oxforddictionaries.com/definition/us/{}".format(word)
+            "https://www.lexico.com/search?filter=dictionary&query={}"\
+            .format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
 
         if "No exact matches found" in site:
             print("\n  No matches found.\n")
             quit()
-
-    if link not in site:
-        start = site.index("definition of ") + 14
-        end = start + site[start:].index(" in")
-        word = site[start:end]
 
     if "_" in word:
         word = word.replace("_", " ")
@@ -487,7 +484,7 @@ def terminal_width():
         term_width = 80
 
     if term_width < 30:
-        print("Terminal width less than 30 is not supported")
+        print("\n  Terminal width less than 30 is not supported.\n")
         quit()
 
     return term_width
@@ -496,6 +493,9 @@ def terminal_width():
 def url_check(link):
     try:
         site = urllib.request.urlopen(link).read().decode("utf-8")
+    except urllib.error.HTTPError:
+        print("\n  No matches found.\n")
+        quit()
     except urllib.error.URLError:
         print("\n  Check your internet connection!\n")
         quit()
