@@ -19,37 +19,29 @@ Definition:
 ```
 $ oxd -d opaque
 
-  DEFINITION OF OPAQUE:
+DEFINITION OF OPAQUE:
 
-  ADJECTIVE
+ADJECTIVE
 
 | 1  Not able to be seen through; not transparent.
 
-     'the windows were opaque with steam'
++    1.1  (especially of language) hard or impossible to understand.
 
-+    1.1  (especially of language) hard or impossible to understand;
-          unfathomable.
+NOUN
 
-          'technical jargon that was opaque to her'
-
-  NOUN
-
-| 1  An opaque thing or substance.
-
-     'And to think that we used to spend the dark winter months hibernating
-      our legs away in a cocoon of black opaques!'
+| 1  An opaque thing.
 
 +    1.1  A substance for producing opaque areas on negatives.
 
-  ORIGIN
+ORIGIN
 
-  Late Middle English opake, from Latin opacus ‘darkened’. The current
-  spelling (rare before the 19th century) has been influenced by the French
-  form.
+Late Middle English opake, from Latin opacus ‘darkened’. The current 
+spelling (rare before the 19th century) has been influenced by the French 
+form.
 
-  PRONUNCIATION
+PRONUNCIATION
 
-  /oʊˈpeɪk/, /ōˈpāk/
+/ə(ʊ)ˈpeɪk/
 
 ```
 
