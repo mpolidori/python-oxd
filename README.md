@@ -4,7 +4,7 @@ is a CLI for retrieving definitions and synonyms from the [Oxford Dictionaries](
 
 ## Installation
 
-oxd is available in the AUR (Arch User Repository).
+oxd is available in the AUR ([Arch User Repository](https://aur.archlinux.org/packages/python-oxd-git/)).
 
 ```
 $ git clone https://aur.archlinux.org/python-oxd-git.git
