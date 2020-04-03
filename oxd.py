@@ -33,11 +33,8 @@ def definition(word):
             print("\n  No matches found.\n")
             quit()
 
-    if "_" in word:
-        word = word.replace("_", " ")
-
-    if "&#39;" in word:
-        word = word.replace("&#39;", "'")
+    word = site[
+        site.index(' | Meaning of ') + 14:site.index(' by Lexico')]
 
     print("\n  DEFINITION OF {}:\n".format(word.upper()))
 
