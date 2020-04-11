@@ -1,10 +1,10 @@
 # oxd
 
-is a CLI for retrieving definitions and synonyms from the [Oxford Dictionaries](https://en.oxforddictionaries.com) website.
+oxd is a CLI for retrieving definitions and synonyms from the [Oxford Dictionaries](https://www.lexico.com/) website (now under the name Lexico). **This is a WIP**. Please let me know if you have any issues or recommendations!
 
 ## Installation
 
-oxd is available in the AUR ([Arch User Repository](https://aur.archlinux.org/packages/python-oxd-git/)).
+oxd is available in the AUR ([Arch User Repository](https://aur.archlinux.org/packages/python-oxd-git/)):
 
 ```
 $ git clone https://aur.archlinux.org/python-oxd-git.git
@@ -12,9 +12,15 @@ $ cd python-oxd-git
 $ makepkg -si
 ```
 
-## Example
+I plan on refactoring this project and releasing it in the PyPI at some point. For now, if you're not using Arch (or the AUR), you can clone this repo, and set an alias in your `.bashrc`, `.zshrc`, or equivalent:
 
-Definition:
+```
+alias oxd="python path/to/oxd.py"
+```
+
+## Examples
+
+Definitions:
 
 ```
 $ oxd -d opaque
