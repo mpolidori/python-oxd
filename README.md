@@ -15,7 +15,7 @@ $ makepkg -si
 I plan on refactoring this project and releasing it in the PyPI at some point. For now, if you're not using Arch (or the AUR), you can clone this repo, and set an alias in your `.bashrc`, `.zshrc`, or equivalent:
 
 ```
-alias oxd="python path/to/oxd.py"
+alias oxd="python path/to/oxd.py "
 ```
 
 ## Examples
