@@ -33,8 +33,11 @@ def definition(word):
             print("\n  No matches found.\n")
             quit()
 
-    word = site[
-        site.index(' | Definition of ') + 14:site.index(' by Lexico')]
+    try:
+        word = site[
+            site.index(" | Definition of ") + 14:site.index(" by Lexico")]
+    except ValueError:
+        word = " ".join(word.split("_"))
 
     print("\n  DEFINITION OF {}:\n".format(word.upper()))
 
