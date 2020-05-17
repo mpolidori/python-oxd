@@ -415,7 +415,8 @@ def definition(word):
 
     if len(pronunciations) > 0:
         if len(pronunciations) > 1:
-            pronunciations = ", ".join(set(pronunciations))
+            pronunciations = ", ".join(
+                [_ for _ in set(pronunciations) if _ != ""])
         else:
             pronunciations = pronunciations[0]
 
