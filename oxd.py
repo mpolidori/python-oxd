@@ -277,6 +277,9 @@ def definition(word):
         if item[:3] == " sh":
             item = "  {}".format(item)
 
+        if "  sh" in item and item.index("  sh") > 1:
+            item = " {}".format(item)
+
         if last[:3] == "-P-":
             if item.count("'") >= 2 and item[-1] == "'":
                 item = prepend_symbol + item[1:]
