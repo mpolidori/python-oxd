@@ -236,6 +236,9 @@ def definition(word):
 
             item = item[4:]
 
+        if "See " in item:
+            continue
+
         if (item[spaces] == "'" or item.count("'") >= 2) and item[-1] == "'":
             if last[:4] == "-CR-":
                 if second_last[:4] == "-EX-":
