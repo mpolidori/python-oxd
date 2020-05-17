@@ -274,6 +274,9 @@ def definition(word):
         item = " " * spaces + item
         last_spaces = spaces
 
+        if item[:3] == " sh":
+            item = "  {}".format(item)
+
         if last[:3] == "-P-":
             if item.count("'") >= 2 and item[-1] == "'":
                 item = prepend_symbol + item[1:]
