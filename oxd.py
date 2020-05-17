@@ -10,7 +10,7 @@ def definition(word):
     term_width = terminal_width()
     word = format_word(word)
     link = \
-        "https://www.lexico.com/search?filter=dictionary&query={}".format(word)
+        "https://www.lexico.com/en/definition/{}".format(word)
     site = url_check(link)
     results = []
     pronunciations = []
@@ -25,7 +25,7 @@ def definition(word):
             quit()
 
         link = \
-            "https://www.lexico.com/search?filter=dictionary&query={}"\
+            "https://www.lexico.com/en/dictionary/{}"\
             .format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
 
@@ -34,7 +34,7 @@ def definition(word):
             quit()
 
     word = site[
-        site.index(' | Meaning of ') + 14:site.index(' by Lexico')]
+        site.index(' | Definition of ') + 14:site.index(' by Lexico')]
 
     print("\n  DEFINITION OF {}:\n".format(word.upper()))
 
