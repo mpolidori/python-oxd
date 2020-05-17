@@ -25,7 +25,7 @@ def definition(word):
             quit()
 
         link = \
-            "https://www.lexico.com/en/dictionary/{}"\
+            "https://www.lexico.com/en/definition/{}" \
             .format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
 
