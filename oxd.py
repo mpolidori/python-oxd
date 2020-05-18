@@ -277,10 +277,11 @@ def definition(word):
         item = " " * spaces + item
         last_spaces = spaces
 
-        if item[:3] == " sh":
+        if item[:3] in [" sh", " an"]:
             item = "  {}".format(item)
 
-        if "  sh" in item and item.index("  sh") > 1:
+        if ("  sh" in item and item.index("  sh") > 1) \
+                or ("  an" in item and item.index("  an") > 1):
             item = " {}".format(item)
 
         if last[:3] == "-P-":
