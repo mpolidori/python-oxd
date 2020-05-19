@@ -79,8 +79,8 @@ def definition(word):
                      i + 23 + site[i + 23:]
                      .index(">") + 1:].index("<")]
 
-            if len(results) > 1 and any(ref in entry for ref in
-                                        ["See ", "Compare with "]):
+            if any(ref in entry for ref in ["See ", "Compare with "]) \
+               and len(results) > 0:
                 if entry not in results[-1]:
                     results[-1] += " {}.".format(entry)
             else:
@@ -281,6 +281,10 @@ def definition(word):
 
         item = " " * spaces + item
         last_spaces = spaces
+
+        if any(s in item for s in ["  another term for ", "  short for "]) \
+           and len([c.isdigit() for c in item]) > 1:
+            item = " {}".format(item)
 
         if item[:3] in [" sh", " an", " va"] \
            and item.replace(" ", "").isalpha():
