@@ -35,7 +35,7 @@ def definition(word):
 
     try:
         word = site[
-            site.index(" | Definition of ") + 14:site.index(" by Lexico")]
+            site.index(" | Definition of ") + 17:site.index(" by Lexico")]
     except ValueError:
         word = " ".join(word.split("_"))
 
@@ -72,11 +72,19 @@ def definition(word):
 
         if site[i:i + 23] == "class=\"crossReference\">" \
            and site[i + 23] != "<":
-            results.append(
-                "-CR-" + site[i + 23:i + 23 + site[i + 23:].index("<")] +
-                site[i + 23 + site[i + 23:].index(">") + 1:i + 23 +
-                     site[i + 23:].index(">") + 1 + site[i
-                     + 23 + site[i + 23:].index(">") + 1:].index("<")])
+            entry = site[i + 23:i + 23 + site[i + 23:].index("<")] \
+                    + site[i + 23 + site[
+                     i + 23:].index(">") + 1:i + 23 + site[i + 23:]
+                     .index(">") + 1 + site[
+                     i + 23 + site[i + 23:]
+                     .index(">") + 1:].index("<")]
+
+            if len(results) > 1 and any(ref in entry for ref in
+                                        ["See ", "Compare with "]):
+                if entry not in results[-1]:
+                    results[-1] += " {}.".format(entry)
+            else:
+                results.append("-CR-" + entry)
 
         if site[i:i + 15] == "class=\"phrase\">":
             break
@@ -236,9 +244,6 @@ def definition(word):
 
             item = item[4:]
 
-        if "See " in item:
-            continue
-
         if (item[spaces] == "'" or item.count("'") >= 2) and item[-1] == "'":
             if last[:4] == "-CR-":
                 if second_last[:4] == "-EX-":
@@ -277,11 +282,14 @@ def definition(word):
         item = " " * spaces + item
         last_spaces = spaces
 
-        if item[:3] in [" sh", " an"]:
+        if item[:3] in [" sh", " an", " va"] \
+           and item.replace(" ", "").isalpha():
             item = "  {}".format(item)
 
-        if ("  sh" in item and item.index("  sh") > 1) \
-                or ("  an" in item and item.index("  an") > 1):
+        if (("  sh" in item and item.index("  sh") > 1)
+                or ("  an" in item and item.index("  an") > 1)
+                or ("  va" in item and item.index("  va") > 1)) \
+                and "." not in item and item.replace(" ", "").isalpha():
             item = " {}".format(item)
 
         if last[:3] == "-P-":
