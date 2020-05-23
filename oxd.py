@@ -283,7 +283,8 @@ def definition(word):
         last_spaces = spaces
 
         if any(s in item for s in ["  another term for ", "  short for "]) \
-           and len([c.isdigit() for c in item]) > 1:
+           and len([c.isdigit() for c in item]) > 1 \
+           and all(i == 3 for i in [spaces, last_spaces]):
             item = " {}".format(item)
 
         if item[:3] in [" sh", " an", " va"] \
