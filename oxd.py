@@ -10,7 +10,8 @@ def definition(word):
     term_width = terminal_width()
     word = format_word(word)
     link = \
-        "https://www.lexico.com/en/definition/{}".format(word)
+        "https://www.lexico.com/search?filter=noad&dictionary=en&query={}"\
+        .format(word)
     site = url_check(link)
     results = []
     pronunciations = []
@@ -25,7 +26,7 @@ def definition(word):
             quit()
 
         link = \
-            "https://www.lexico.com/en/definition/{}" \
+            "https://www.lexico.com/search?filter=noad&dictionary=en&query={}"\
             .format(word)
         site = urllib.request.urlopen(link).read().decode("utf-8")
 
@@ -35,7 +36,8 @@ def definition(word):
 
     try:
         word = site[
-            site.index(" | Definition of ") + 17:site.index(" by Lexico")]
+            site.index(" | Definition of ") + 17:site.index(
+                " by Oxford Dictionaries")]
     except ValueError:
         word = " ".join(word.split("_"))
 
