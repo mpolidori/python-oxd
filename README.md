@@ -100,3 +100,4 @@ order, decree, edict, mandate, bidding, will, motto, slogan, watchword,
 password, catchword, buzz word, phrase, express, put, couch, frame, set 
 forth, formulate, style, say, utter, state
 ```
+
